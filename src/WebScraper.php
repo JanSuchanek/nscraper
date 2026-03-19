@@ -168,6 +168,9 @@ class WebScraper
 	}
 
 
+	/**
+	 * @return list<string>
+	 */
 	private function extractDetailUrls(string $html): array
 	{
 		$urls = [];
@@ -184,6 +187,8 @@ class WebScraper
 
 	/**
 	 * Fetch URL content via cURL.
+	 *
+	 * @param list<string> $headers
 	 */
 	public function fetch(string $url, array $headers = []): ?string
 	{
