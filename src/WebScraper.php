@@ -126,13 +126,14 @@ class WebScraper
 	{
 		// 1. JSON-LD structured data
 		if (preg_match('/<script[^>]*type="application\/ld\+json"[^>]*>(.*?)<\/script>/s', $html, $m)) {
+			/** @var array<string, mixed>|null $data */
 			$data = json_decode($m[1], true);
-			if (isset($data['description'])) {
+			if (is_array($data) && isset($data['description']) && is_string($data['description'])) {
 				return strip_tags($data['description']);
 			}
-			if (isset($data['@graph'])) {
+			if (is_array($data) && isset($data['@graph']) && is_array($data['@graph'])) {
 				foreach ($data['@graph'] as $item) {
-					if (isset($item['description'], $item['@type']) && $item['@type'] === 'Product') {
+					if (is_array($item) && isset($item['description'], $item['@type']) && $item['@type'] === 'Product' && is_string($item['description'])) {
 						return strip_tags($item['description']);
 					}
 				}
@@ -181,7 +182,7 @@ class WebScraper
 				}
 			}
 		}
-		return array_unique($urls);
+		return array_values(array_unique($urls));
 	}
 
 
@@ -212,6 +213,6 @@ class WebScraper
 		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		curl_close($ch);
 
-		return ($httpCode === 200 && $result !== false) ? $result : null;
+		return ($httpCode === 200 && is_string($result)) ? $result : null;
 	}
 }
